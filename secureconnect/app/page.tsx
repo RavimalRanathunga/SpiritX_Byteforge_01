@@ -7,12 +7,12 @@ export default function WelcomePage() {
       <p className="text-lg text-gray-600 mb-8">Explore the Secure and User-friendly Authentication System</p>
       <div className="flex space-x-4">
         <Link href="/login">
-          <button className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600">
+          <button className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-400">
             Sign In
           </button>
         </Link>
         <Link href="/signup">
-          <button className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600">
+          <button className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-400">
             Sign Up
           </button>
         </Link>
