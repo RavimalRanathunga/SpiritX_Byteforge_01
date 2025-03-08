@@ -7,10 +7,18 @@ import bcrypt from "bcrypt";
 import { z } from 'zod';
 
 const FormSchema = z.object({
-  id:z.string(),
+  id: z.string(),
   username: z.string(),
-  password: z.string(),
-});
+  password: z
+    .string()
+    .min(8, { message: 'Be at least 8 characters long' })
+    .regex(/[a-z]/, { message: 'Contain at least one lowercase letter' })
+    .regex(/[A-Z]/, { message: 'Contain at least one uppercase letter' })
+    .regex(/[^a-zA-Z0-9]/, {
+      message: 'Contain at least one special character.',
+    })
+    .trim(),
+})
  
 const CreateUser = FormSchema.omit({ id: true});
  
@@ -35,15 +43,23 @@ export async function authenticate(
 
 export async function RegisterUser( prevState: string | undefined,formData:FormData)
 {
-  const { username, password } = CreateUser.parse({
-    username: formData.get('username'),
-    password: formData.get('password'),
-  });
+  try{
+    const parsedData = CreateUser.safeParse({
+      username: formData.get("username"),
+      password: formData.get("password"),
+    });
+
+    // If validation fails, return errors
+    if (!parsedData.success) {
+      return parsedData.error.issues[0].message; // Return first validation error
+    }
+
+    const { username, password } = parsedData.data;
 
 
   const sql = postgres(process.env.DATABASE_URL!, { ssl: 'require' });
 
-  try {
+  
     // Check if user already exists
     const existingUser: User[] = await sql<User[]>`
     SELECT * FROM users WHERE username = ${username}
